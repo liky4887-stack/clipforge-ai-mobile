@@ -15,7 +15,7 @@ import type {
 
 const DEVICE_ID_KEY = 'clipforge_device_id';
 
-const API_BASE = process.env.EXPO_PUBLIC_API_URL || 'http://localhost:3000/api';
+const API_BASE = process.env.EXPO_PUBLIC_API_URL || 'http://192.168.43.101:3000/api';
 
 let cachedDeviceId: string | null = null;
 
