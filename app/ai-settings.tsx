@@ -1,5 +1,7 @@
 import { Pressable, ScrollView, StyleSheet, Switch, Text, TextInput, View } from 'react-native';
+import { useState } from 'react';
 import { useRouter } from 'expo-router';
+import { api } from '@/services/api';
 import { ArrowLeft, Check, ChevronDown, Sparkles, Wand2 } from 'lucide-react-native';
 import { Screen, SectionTitle, Card } from '@/components/ui';
 import { useDraftStore } from '@/store/useAppStore';
@@ -59,7 +61,10 @@ function Chip({
 
 export default function AiSettingsScreen() {
   const router = useRouter();
+  const [isLoading, setIsLoading] = useState(false);
   const {
+    youtubeUrl,
+    sourceUrl,
     projectTitle,
     setProjectTitle,
     customPrompt,
@@ -223,10 +228,50 @@ export default function AiSettingsScreen() {
       <View style={styles.footer}>
         <Pressable
           style={({ pressed }) => [styles.generateButton, pressed && { opacity: 0.85 }]}
-          onPress={() => router.push('/processing')}
+          onPress={async () => {
+          setIsLoading(true);
+          try {
+            const finalUrl = youtubeUrl || '';
+            const response = await api.createProject({
+              videoUrl: finalUrl,
+              brandTemplateId: null,
+              curationPref: {
+                clipDurations: [[30, 60]],
+                customPrompt: customPrompt,
+                genre: genre,
+                model: 'clipforge-v2',
+                skipCurate: false,
+                skipSlicing: skipSlicing,
+                topicKeywords: [],
+                enableAutoHook: enableAutoHook,
+                range: null,
+                activeLang: null,
+                narratives: null
+              },
+              importPref: { sourceLang: 'en' },
+              renderPref: {
+                layoutAspectRatio: aspectRatio,
+                enableWatermark: enableWatermark,
+                enableCaption: enableCaption,
+                enableEmoji: enableEmoji
+              },
+              uploadedVideoAttr: { title: projectTitle || 'YouTube Import', durationMs: 600000 }
+            });
+            router.push({
+              pathname: '/processing',
+              params: { projectId: response.id }
+            });
+          } catch (e) {
+            alert("Failed to start project");
+            console.error(e);
+          } finally {
+            setIsLoading(false);
+          }
+        }}
+        disabled={isLoading}
         >
           <Sparkles size={18} color="#FFFFFF" strokeWidth={2.5} />
-          <Text style={styles.generateButtonText}>Generate Clips</Text>
+          <Text style={styles.generateButtonText}>{isLoading ? 'Starting...' : 'Generate Clips'}</Text>
           <Wand2 size={18} color="#FFFFFF" strokeWidth={2.5} />
         </Pressable>
       </View>
