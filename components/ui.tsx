@@ -1,4 +1,4 @@
-import { ActivityIndicator, Pressable, StyleSheet, Text, View } from 'react-native';
+import { RefreshControl, ActivityIndicator, Pressable, StyleSheet, Text, View } from 'react-native';
 import { colors, fonts, radius, spacing } from '@/lib/theme';
 
 export function Screen({ children, style }: { children: React.ReactNode; style?: object }) {

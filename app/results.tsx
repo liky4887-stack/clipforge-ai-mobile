@@ -1,6 +1,8 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { Dimensions, Image as RNImage, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
-import { useRouter } from 'expo-router';
+import { useRouter, useLocalSearchParams } from 'expo-router';
+import { File, Paths } from 'expo-file-system';
+import * as MediaLibrary from 'expo-media-library';
 import { shareAsync, isAvailableAsync } from 'expo-sharing';
 import { useVideoPlayer, VideoView, type VideoPlayer, type VideoSource } from 'expo-video';
 import {
@@ -42,6 +44,8 @@ function Thumb({
 
 export default function ResultsScreen() {
   const router = useRouter();
+  const params = useLocalSearchParams();
+  const projectIdParam = (params.projectId || params.id) as string | undefined;
   const clips = useDataStore((s) => s.clips);
   const clipsLoading = useDataStore((s) => s.clipsLoading);
   const clipsError = useDataStore((s) => s.clipsError);
@@ -66,25 +70,53 @@ export default function ResultsScreen() {
     }
   }, [playerClip, player]);
 
-  const projectId = clips[0]?.projectId ?? null;
+  // Load this project's clips on mount and whenever the route param changes.
+  useEffect(() => {
+    resetClips();
+    if (projectIdParam) {
+      loadClips(projectIdParam);
+    }
+  }, [projectIdParam, loadClips, resetClips]);
 
   const handleLoad = useCallback(async () => {
-    if (projectId) await loadClips(projectId);
-  }, [projectId, loadClips]);
+    if (projectIdParam) await loadClips(projectIdParam);
+  }, [projectIdParam, loadClips]);
 
   const shareClip = async (clip: ExportableClip) => {
-    const url = clip.shareUrl || clip.videoUrl;
     try {
-      if (await isAvailableAsync()) {
-        await shareAsync(url, { dialogTitle: `Share ${clip.title}` });
+      if (!(await isAvailableAsync())) return;
+      
+      const destination = new File(Paths.document, `${clip.id}.mp4`);
+      
+      if (!destination.exists) {
+        await File.downloadFileAsync(clip.videoUrl, destination);
       }
-    } catch {
-      // sharing unavailable
+      
+      await shareAsync(destination.uri, { dialogTitle: `Share ${clip.title}` });
+    } catch (e) {
+      console.error(e);
+      alert('Sharing failed');
     }
   };
 
-  const downloadClip = (clip: ExportableClip) => {
-    setSaved((prev) => ({ ...prev, [clip.id]: true }));
+  const downloadClip = async (clip: ExportableClip) => {
+    try {
+      const { status } = await MediaLibrary.requestPermissionsAsync();
+      if (status !== 'granted') {
+        alert('Permission required to save video');
+        return;
+      }
+      setSaved((prev) => ({ ...prev, [clip.id]: true }));
+      
+      const destination = new File(Paths.document, `${clip.id}.mp4`);
+      const output = await File.downloadFileAsync(clip.videoUrl, destination);
+      await MediaLibrary.saveToLibraryAsync(output.uri);
+      alert('Saved to gallery!');
+    } catch (e) {
+      setSaved((prev) => ({ ...prev, [clip.id]: false }));
+      alert('Download failed');
+      console.error(e);
+    }
   };
 
   if (clipsLoading && clips.length === 0) {
@@ -162,7 +194,7 @@ export default function ResultsScreen() {
 
             <View style={styles.cardBody}>
               <Text style={styles.cardTitle} numberOfLines={2}>
-                {clip.title}
+                {clip.title || 'Viral Clip'}
               </Text>
               <View style={styles.scoreRow}>
                 <Flame size={13} color={colors.warning} strokeWidth={2.5} />
@@ -409,7 +441,7 @@ const styles = StyleSheet.create({
     width: 18,
   },
   playerOverlay: {
-    ...StyleSheet.absoluteFill,
+    ...StyleSheet.absoluteFillObject,
     backgroundColor: 'rgba(0, 0, 0, 0.97)',
     zIndex: 10,
   },

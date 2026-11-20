@@ -64,7 +64,6 @@ export default function AiSettingsScreen() {
   const [isLoading, setIsLoading] = useState(false);
   const {
     youtubeUrl,
-    sourceUrl,
     projectTitle,
     setProjectTitle,
     customPrompt,
