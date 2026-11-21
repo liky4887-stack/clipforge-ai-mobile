@@ -189,17 +189,17 @@ export default function AiSettingsScreen() {
           />
           <View style={styles.divider} />
           <ToggleRow
-            label="Enable Emojis"
-            description="Add expressive emojis to captions"
-            value={enableEmoji}
-            onChange={setEnableEmoji}
+            label="Enable Emojis (Coming soon)"
+            description="Expressive emojis on captions — shipping in a later update"
+            value={false}
+            onChange={() => {}}
           />
           <View style={styles.divider} />
           <ToggleRow
-            label="Enable Watermark"
-            description="Add your brand watermark to exported clips"
-            value={enableWatermark}
-            onChange={setEnableWatermark}
+            label="Enable Watermark (Coming soon)"
+            description="Brand watermark on exports — shipping in a later update"
+            value={false}
+            onChange={() => {}}
           />
           <View style={styles.divider} />
           <Text style={styles.fieldLabel}>Aspect Ratio</Text>
