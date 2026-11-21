@@ -37,3 +37,5 @@ yarn-error.*
 # Backups
 *.backup*
 
+*.backup-*
+patch.js
