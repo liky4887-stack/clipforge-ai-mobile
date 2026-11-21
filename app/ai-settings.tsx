@@ -235,7 +235,7 @@ export default function AiSettingsScreen() {
               videoUrl: finalUrl,
               brandTemplateId: null,
               curationPref: {
-                clipDurations: [[30, 60]],
+                clipDurations: [clipDurations.length > 0 ? clipDurations : [30]],
                 customPrompt: customPrompt,
                 genre: genre,
                 model: 'clipforge-v2',
