@@ -15,7 +15,7 @@ import type {
 
 const DEVICE_ID_KEY = 'clipforge_device_id';
 
-const API_BASE = process.env.EXPO_PUBLIC_API_URL || 'http://192.168.43.101:3000/api';
+const API_BASE = process.env.EXPO_PUBLIC_API_URL || 'http://127.0.0.1:3000/api';
 
 let cachedDeviceId: string | null = null;
 
@@ -40,7 +40,7 @@ const client = axios.create({
 
 client.interceptors.request.use(async (config) => {
   const deviceId = await ensureDeviceId();
-  config.headers['x-device-id'] = deviceId;
+  config.headers.set('x-device-id', deviceId);
   return config;
 });
 

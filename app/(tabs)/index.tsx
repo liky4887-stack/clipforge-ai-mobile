@@ -93,7 +93,7 @@ export default function HomeScreen() {
                 onPress={() => {
                   if (project.status === 'completed') {
                     router.push({ pathname: '/results', params: { projectId: project.id } });
-                  } else if (project.status === 'processing') {
+                  } else if (project.status === 'processing' || project.status === 'failed') {
                     router.push({ pathname: '/processing', params: { projectId: project.id } });
                   }
                 }}

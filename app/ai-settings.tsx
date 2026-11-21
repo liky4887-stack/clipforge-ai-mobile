@@ -261,7 +261,8 @@ export default function AiSettingsScreen() {
               params: { projectId: response.id }
             });
           } catch (e) {
-            alert("Failed to start project");
+            const msg = e instanceof Error ? e.message : "Failed to start project";
+              alert(msg);
             console.error(e);
           } finally {
             setIsLoading(false);

@@ -130,7 +130,20 @@ export default function ResultsScreen() {
   if (clipsError) {
     return (
       <Screen>
-        <View style={{ padding: spacing.md, paddingTop: spacing.xl + 16 }}>
+        <View style={styles.header}>
+          <Pressable
+            style={({ pressed }) => [styles.backButton, pressed && { opacity: 0.6 }]}
+            onPress={() => {
+              resetClips();
+              router.replace('/');
+            }}
+          >
+            <ArrowLeft size={22} color={colors.text} strokeWidth={2} />
+          </Pressable>
+          <Text style={styles.headerTitle}>Your Clips</Text>
+          <View style={{ width: 40 }} />
+        </View>
+        <View style={{ padding: spacing.md }}>
           <ErrorBanner message={clipsError} onRetry={handleLoad} />
         </View>
       </Screen>
@@ -140,6 +153,19 @@ export default function ResultsScreen() {
   if (clips.length === 0) {
     return (
       <Screen>
+        <View style={styles.header}>
+          <Pressable
+            style={({ pressed }) => [styles.backButton, pressed && { opacity: 0.6 }]}
+            onPress={() => {
+              resetClips();
+              router.replace('/');
+            }}
+          >
+            <ArrowLeft size={22} color={colors.text} strokeWidth={2} />
+          </Pressable>
+          <Text style={styles.headerTitle}>Your Clips</Text>
+          <View style={{ width: 40 }} />
+        </View>
         <EmptyState
           icon={<TriangleAlert size={48} color={colors.textMuted} strokeWidth={1.5} />}
           title="No clips yet"

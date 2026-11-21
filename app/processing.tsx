@@ -60,7 +60,7 @@ export default function ProcessingScreen() {
       <SafeAreaView style={styles.container}>
         <Text style={[styles.title, { color: '#FF4B4B' }]}>Something went wrong</Text>
         <Text style={styles.errorText}>{error}</Text>
-        <TouchableOpacity style={styles.button} onPress={() => router.back()}>
+        <TouchableOpacity style={styles.button} onPress={() => router.replace('/')}>
           <Text style={styles.buttonText}>Go Back</Text>
         </TouchableOpacity>
       </SafeAreaView>

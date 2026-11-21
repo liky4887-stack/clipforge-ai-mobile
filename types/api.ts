@@ -71,6 +71,7 @@ export interface ExportableClip {
   id: string;
   projectId: string;
   title: string;
+  bio?: string;
   viralityScore: number;
   durationMs: number;
   thumbnailUrl?: string | null;
